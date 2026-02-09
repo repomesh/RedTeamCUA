@@ -40,6 +40,10 @@ Our sandbox supports key features tailored for systematic red-teaming of CUAs, i
 
 Using RedTeamCUA, we develop **RTC-Bench**, a comprehensive benchmark with 864 examples designed to allow for systematic analysis of CUA vulnerabilities against indirect prompt injection in realistic and diverse adversarial scenarios. RTC-Bench features adversarial examples that investigate realistic, hybrid attack scenarios spanning web and OS environments and focuses on fundamental security violations derived from the CIA triad (Confidentiality, Integrity, and Availability).
 
+## 📣 Updates
+- 2026-02-09: Support using separate AWS credentials for EC2 instance creation and Claude Bedrock API calls. See the [script](#run_opus_46.sh) for details.
+- 2026-02-09: 🎉 Our paper has been accepted as an [ICLR 2026 Oral](https://openreview.net/forum?id=yWwrgcBoK3) .
+
 ## 🛠️ Setup
 
 ### 1. Python Environment Setup
@@ -434,13 +438,10 @@ Their licenses are listed here for reference:
 
 ## Citation
 ```
-@misc{liao2025redteamcuarealisticadversarialtesting,
-      title={RedTeamCUA: Realistic Adversarial Testing of Computer-Use Agents in Hybrid Web-OS Environments}, 
-      author={Zeyi Liao and Jaylen Jones and Linxi Jiang and Eric Fosler-Lussier and Yu Su and Zhiqiang Lin and Huan Sun},
-      year={2025},
-      eprint={2505.21936},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL},
-      url={https://arxiv.org/abs/2505.21936}, 
+@article{liao2025redteamcua,
+   title={Redteamcua: Realistic adversarial testing of computer-use agents in hybrid web-os environments},
+   author={Liao, Zeyi and Jones, Jaylen and Jiang, Linxi and Ning, Yuting and Fosler-Lussier, Eric and Su, Yu and Lin, Zhiqiang and Sun, Huan},
+   journal={arXiv preprint arXiv:2505.21936},
+   year={2025}
 }
 ```
