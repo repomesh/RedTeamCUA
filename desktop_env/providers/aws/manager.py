@@ -1,6 +1,5 @@
 import os
 from filelock import FileLock
-import boto3
 import psutil
 import logging
 
@@ -9,6 +8,7 @@ from botocore.exceptions import ClientError
 import random
 import time
 from desktop_env.providers.aws.aws_config import IMAGE_ID_MAP,INSTANCE_TYPE
+from desktop_env.providers.aws.provider import _create_ec2_client
 
 logger = logging.getLogger("desktopenv.providers.aws.AWSVMManager")
 logger.setLevel(logging.INFO)
@@ -34,7 +34,7 @@ def _allocate_vm(region=DEFAULT_REGION, aws_ami = "reddit", max_retries=5):
         "NetworkInterfaces": NETWORK_INTERFACE_MAP[region]
     }
 
-    ec2_client = boto3.client('ec2', region_name=region)
+    ec2_client = _create_ec2_client(region)
     
     retries = 0
     while retries <= max_retries:
@@ -152,7 +152,7 @@ class AWSVMManager(VMManager):
 
         # Process each region
         for region, vm_info_list in vm_path_at_vm_regions.items():
-            ec2_client = boto3.client('ec2', region_name=region)
+            ec2_client = _create_ec2_client(region)
             instance_ids = [vm_info[0].split('@')[0] for vm_info in vm_info_list]
 
             # Batch describe instances

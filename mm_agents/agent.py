@@ -844,9 +844,37 @@ class PromptAgent:
                                 "type": "bash_20250124",
                                 "name": "bash"
                             }
+                        ],
+                        "us.anthropic.claude-sonnet-4-5-20250929-v1:0": [
+                            {
+                                "type": "computer_20250124",
+                                "name": "computer",
+                                "display_width_px": 1366,
+                                "display_height_px": 768
+                            }
+                        ],
+                        # opus 4.5 should use 11-24 but the bedrock api has some errors for that, so we use 01-24 instead.
+                        # "enable_zoom": 'true' is available in 11-24 but not in 01-24.
+                        "global.anthropic.claude-opus-4-5-20251101-v1:0": [
+                            {
+                                "type": "computer_20250124",
+                                "name": "computer",
+                                "display_width_px": 1366,
+                                "display_height_px": 768,
+                                "display_number": 1,
+                            }
+                        ],
+                        "global.anthropic.claude-opus-4-6-v1": [
+                            {
+                                "type": "computer_20251124",
+                                "name": "computer",
+                                "display_width_px": 1366,
+                                "display_height_px": 768,
+                                "display_number": 1,
+                            }
                         ]
                     }
-                        
+                    
                     if len(self.claude_responses) > self.max_trajectory_length:
                         if self.claude_responses == 0:
                             claude_responses = []
@@ -872,6 +900,13 @@ class PromptAgent:
 
                     if self.model == "us.anthropic.claude-3-5-sonnet-20241022-v2:0":
                         create_args["betas"] = ["computer-use-2024-10-22"]
+                    # opus 4.5 should use 11-24 but the bedrock api has some errors for that, so we use 01-24 instead.
+                    elif self.model == "global.anthropic.claude-opus-4-5-20251101-v1:0":
+                        create_args["betas"] = ["computer-use-2025-01-24"]
+                        create_args["thinking"] = {"type": "enabled", "budget_tokens": 1024} 
+                    elif self.model == "global.anthropic.claude-opus-4-6-v1":
+                        create_args["betas"] = ["computer-use-2025-11-24"]
+                        create_args["thinking"] = {"type": "enabled", "budget_tokens": 1024} 
                     else:
                         create_args["betas"] = ["computer-use-2025-01-24"]
                         create_args["thinking"] = {"type": "enabled", "budget_tokens": 1024} 

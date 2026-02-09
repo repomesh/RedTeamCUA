@@ -1,3 +1,4 @@
+import os
 import boto3
 from botocore.exceptions import ClientError,WaiterError
 
@@ -14,6 +15,20 @@ logger.setLevel(logging.INFO)
 
 WAIT_DELAY = 15
 MAX_ATTEMPTS = 10
+
+AWS_EC2_ACCESS_KEY = os.getenv("AWS_ACCESS_KEY_EC2")
+AWS_EC2_SECRET_KEY = os.getenv("AWS_SECRET_KEY_EC2")
+
+
+def _create_ec2_client(region):
+    if not AWS_EC2_ACCESS_KEY or not AWS_EC2_SECRET_KEY:
+        raise RuntimeError("AWS_ACCESS_KEY_EC2 and AWS_SECRET_KEY_EC2 must be set for EC2 operations")
+    return boto3.client(
+        'ec2',
+        region_name=region,
+        aws_access_key_id=AWS_EC2_ACCESS_KEY,
+        aws_secret_access_key=AWS_EC2_SECRET_KEY,
+    )
 
 def wait_for_status_checks(ec2_client, instance_id, max_attempts=40):
     for check_count in range(1, max_attempts + 1):
@@ -60,7 +75,7 @@ class AWSProvider(Provider):
         MAX_ATTEMPTS = 30
 
         logger.info("Starting AWS VM...")
-        ec2_client = boto3.client('ec2', region_name=self.region)
+        ec2_client = _create_ec2_client(self.region)
 
         for attempt in range(1, RETRY_TIMES + 1):
             try:
@@ -99,7 +114,7 @@ class AWSProvider(Provider):
 
     def get_ip_address(self, path_to_vm: str) -> str:
         logger.info("Getting AWS VM IP address...")
-        ec2_client = boto3.client('ec2', region_name=self.region)
+        ec2_client = _create_ec2_client(self.region)
 
         try:
             response = ec2_client.describe_instances(InstanceIds=[path_to_vm])
@@ -118,7 +133,7 @@ class AWSProvider(Provider):
 
     def save_state(self, path_to_vm: str, snapshot_name: str):
         logger.info("Saving AWS VM state...")
-        ec2_client = boto3.client('ec2', region_name=self.region)
+        ec2_client = _create_ec2_client(self.region)
 
         try:
             image_response = ec2_client.create_image(InstanceId=path_to_vm, ImageId=snapshot_name)
@@ -130,7 +145,7 @@ class AWSProvider(Provider):
             raise
 
     def revert_to_snapshot(self, path_to_vm: str, snapshot_name: str):
-        ec2_client = boto3.client('ec2', region_name=self.region)
+        ec2_client = _create_ec2_client(self.region)
 
         try:
             RETRY_TIMES = 5
@@ -195,7 +210,7 @@ class AWSProvider(Provider):
         MAX_ATTEMPTS = 20  # max waiter attempts
         
         logger.info(f"Terminating AWS VM {instance_id} in region {self.region}...")
-        ec2_client = boto3.client('ec2', region_name=self.region)
+        ec2_client = _create_ec2_client(self.region)
         
         for attempt in range(1, RETRY_TIMES + 1):
             try:
@@ -221,7 +236,7 @@ class AWSProvider(Provider):
         RETRY_TIMES = 5
         RETRY_DELAY = 20
         logger.info(f"Stopping AWS VM {path_to_vm}...")
-        ec2_client = boto3.client('ec2', region_name=self.region)
+        ec2_client = _create_ec2_client(self.region)
         
         for attempt in range(1, RETRY_TIMES + 1):
             
